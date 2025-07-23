@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Identity Changer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --success-color: #38ef7d;
+            --warning-color: #fbb040;
+            --danger-color: #f857a6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 10px 10px;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .editor-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .video-container {
+            flex: 2;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: relative;
+        }
+        
+        .controls-container {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .video-preview {
+            width: 100%;
+            background-color: #000;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        #video-player {
+            width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+        }
+        
+        .upload-section {
+            margin-bottom: 25px;
+            text-align: center;
+            padding: 30px 20px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .upload-section:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(106, 17, 203, 0.05);
+            transform: translateY(-3px);
+        }
+        
+        .upload-section i {
+            font-size: 50px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .upload-section h3 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .upload-section p {
+            margin-bottom: 15px;
+            color: #666;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #6c757d, #5a6268);
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 6px 15px rgba(108, 117, 125, 0.4);
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .control-group h3 {
+            margin-bottom: 18px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .control-group h3 i {
+            margin-right: 10px;
+        }
+        
+        .slider-container {
+            margin-bottom: 18px;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .range-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .range-slider:hover {
+            background: #d0d0d0;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .checkbox-container:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .checkbox-container label {
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+        }
+        
+        .logo-upload {
+            margin-top: 15px;
+        }
+        
+        .logo-preview {
+            max-width: 120px;
+            max-height: 120px;
+            margin-top: 15px;
+            display: none;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .trim-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .trim-controls input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .export-section {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--success-color), #11998e);
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+        
+        .status-message {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .effect-presets {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .effect-preset {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            background-color: #f9f9f9;
+        }
+        
+        .effect-preset:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        
+        .effect-preset.active {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 3px 8px rgba(106, 17, 203, 0.2);
+        }
+        
+        .metadata-group {
+            margin-top: 15px;
+        }
+        
+        .metadata-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .watermark-options {
+            margin-top: 15px;
+        }
+        
+        .advanced-options {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .advanced-options h4 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .editor-container {
+                flex-direction: column;
+            }
+            
+            .video-container, .controls-container {
+                flex: 1 1 100%;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-section {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-fingerprint"></i> Video Identity Changer</h1>
+        <p>Modify downloaded videos to change their metadata and appearance</p>
+    </header>
+    
+    <div class="container">
+        <div class="editor-container">
+            <div class="video-container">
+                <div class="upload-section" id="upload-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Upload Your Video</h3>
+                    <p>Drag & drop a downloaded video here or click to browse</p>
+                    <p>Supports MP4, MOV, AVI, MKV (up to 5GB)</p>
+                    <input type="file" id="video-upload" accept="video/*" style="display: none;">
+                    <button class="btn" id="browse-btn">Browse Files</button>
+                </div>
+                
+                <div class="video-preview">
+                    <video id="video-player" controls></video>
+                    <div id="watermark-preview" style="position: absolute; display: none;"></div>
+                </div>
+                
+                <div class="export-section">
+                    <button class="btn" id="export-btn" disabled>
+                        <i class="fas fa-magic"></i> Transform Video Identity
+                    </button>
+                    <div class="progress-container" id="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress" id="progress-bar"></div>
+                        </div>
+                        <p class="status-message" id="status-message">Processing...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-container">
+                <div class="control-group">
+                    <h3><i class="fas fa-cut"></i> Trim Video</h3>
+                    <div class="slider-container">
+                        <label for="trim-start">Start Time: <span id="trim-start-value">00:00:00</span></label>
+                        <input type="range" id="trim-start" class="range-slider" min="0" max="100" value="0">
+                    </div>
+                    <div class="slider-container">
+                        <label for="trim-end">End Time: <span id="trim-end-value">00:00:00</span></label>
+                        <input type="range" id="trim-end" class="range-slider" min="0" max="100" value="100">
+                    </div>
+                    <div class="trim-controls">
+                        <input type="text" id="trim-start-time" placeholder="00:00:00">
+                        <input type="text" id="trim-end-time" placeholder="00:00:00">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-crop-alt"></i> Crop & Resize</h3>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="enable-crop">
+                        <label for="enable-crop">Crop Video</label>
+                    </div>
+                    <div id="crop-options" style="display: none; margin-top: 10px;">
+                        <div class="slider-container">
+                            <label for="crop-width">Width: <span id="crop-width-value">100</span>%</label>
+                            <input type="range" id="crop-width" class="range-slider" min="50" max="100" value="100">
+                        </div>
+                        <div class="slider-container">
+                            <label for="crop-height">Height: <span id="crop-height-value">100</span>%</label>
+                            <input type="range" id="crop-height" class="range-slider" min="50" max="100" value="100">
+                        </div>
+                        <div class="slider-container">
+                            <label for="crop-x">X Position: <span id="crop-x-value">0</span>%</label>
+                            <input type="range" id="crop-x" class="range-slider" min="0" max="100" value="0">
+                        </div>
+                        <div class="slider-container">
+                            <label for="crop-y">Y Position: <span id="crop-y-value">0</span>%</label>
+                            <input type="range" id="crop-y" class="range-slider" min="0" max="100" value="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-image"></i> Watermark & Logo</h3>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="enable-logo">
+                        <label for="enable-logo">Add Watermark/Logo</label>
+                    </div>
+                    <div class="logo-upload" id="logo-upload-section" style="display: none;">
+                        <input type="file" id="logo-upload" accept="image/*" style="display: none;">
+                        <button class="btn btn-secondary" id="upload-logo-btn">
+                            <i class="fas fa-upload"></i> Upload Watermark
+                        </button>
+                        <img id="logo-preview" class="logo-preview">
+                        <div class="slider-container" style="margin-top: 15px;">
+                            <label for="logo-opacity">Opacity: <span id="logo-opacity-value">70</span>%</label>
+                            <input type="range" id="logo-opacity" class="range-slider" min="0" max="100" value="70">
+                        </div>
+                        <div class="slider-container">
+                            <label for="logo-size">Size: <span id="logo-size-value">20</span>%</label>
+                            <input type="range" id="logo-size" class="range-slider" min="5" max="50" value="20">
+                        </div>
+                        <div class="slider-container">
+                            <label for="logo-position-x">Horizontal Position: <span id="logo-position-x-value">90</span>%</label>
+                            <input type="range" id="logo-position-x" class="range-slider" min="0" max="100" value="90">
+                        </div>
+                        <div class="slider-container">
+                            <label for="logo-position-y">Vertical Position: <span id="logo-position-y-value">90</span>%</label>
+                            <input type="range" id="logo-position-y" class="range-slider" min="0" max="100" value="90">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-volume-up"></i> Audio Modifications</h3>
+                    <div class="slider-container">
+                        <label for="volume-control">Volume: <span id="volume-value">100</span>%</label>
+                        <input type="range" id="volume-control" class="range-slider" min="0" max="200" value="100">
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="mute-audio">
+                        <label for="mute-audio">Mute Original Audio</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="replace-audio">
+                        <label for="replace-audio">Replace Audio Track</label>
+                    </div>
+                    <div id="audio-upload-section" style="display: none; margin-top: 10px;">
+                        <input type="file" id="audio-upload" accept="audio/*" style="display: none;">
+                        <button class="btn btn-secondary" id="upload-audio-btn">
+                            <i class="fas fa-music"></i> Upload Audio File
+                        </button>
+                    </div>
+                    <div class="checkbox-container" style="margin-top: 10px;">
+                        <input type="checkbox" id="change-pitch">
+                        <label for="change-pitch">Change Audio Pitch (make sound different)</label>
+                    </div>
+                    <div id="pitch-options" style="display: none; margin-top: 10px;">
+                        <div class="slider-container">
+                            <label for="pitch-control">Pitch Shift: <span id="pitch-value">0</span> semitones</label>
+                            <input type="range" id="pitch-control" class="range-slider" min="-12" max="12" value="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-sliders-h"></i> Video Effects</h3>
+                    <div class="slider-container">
+                        <label for="brightness-control">Brightness: <span id="brightness-value">100</span>%</label>
+                        <input type="range" id="brightness-control" class="range-slider" min="0" max="200" value="100">
+                    </div>
+                    <div class="slider-container">
+                        <label for="contrast-control">Contrast: <span id="contrast-value">100</span>%</label>
+                        <input type="range" id="contrast-control" class="range-slider" min="0" max="200" value="100">
+                    </div>
+                    <div class="slider-container">
+                        <label for="saturation-control">Saturation: <span id="saturation-value">100</span>%</label>
+                        <input type="range" id="saturation-control" class="range-slider" min="0" max="200" value="100">
+                    </div>
+                    <div class="effect-presets">
+                        <div class="effect-preset active" data-filter="none">Original</div>
+                        <div class="effect-preset" data-filter="grayscale">Grayscale</div>
+                        <div class="effect-preset" data-filter="sepia">Sepia</div>
+                        <div class="effect-preset" data-filter="invert">Invert</div>
+                        <div class="effect-preset" data-filter="blur">Blur</div>
+                        <div class="effect-preset" data-filter="vintage">Vintage</div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-tachometer-alt"></i> Speed & Format</h3>
+                    <div class="slider-container">
+                        <label for="speed-control">Playback Speed: <span id="speed-value">1.0</span>x</label>
+                        <input type="range" id="speed-control" class="range-slider" min="0.25" max="4" step="0.25" value="1">
+                    </div>
+                    <div class="checkbox-container" style="margin-top: 10px;">
+                        <input type="checkbox" id="change-resolution">
+                        <label for="change-resolution">Change Resolution</label>
+                    </div>
+                    <div id="resolution-options" style="display: none; margin-top: 10px;">
+                        <select id="resolution-select" class="metadata-input">
+                            <option value="original">Keep Original</option>
+                            <option value="720p">720p (HD)</option>
+                            <option value="480p">480p (SD)</option>
+                            <option value="360p">360p</option>
+                            <option value="240p">240p</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <div id="custom-resolution" style="display: none; margin-top: 10px;">
+                            <input type="number" id="custom-width" class="metadata-input" placeholder="Width (px)">
+                            <input type="number" id="custom-height" class="metadata-input" placeholder="Height (px)">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-info-circle"></i> Metadata Changer</h3>
+                    <div class="metadata-group">
+                        <input type="text" id="video-title" class="metadata-input" placeholder="New Video Title">
+                        <input type="text" id="video-author" class="metadata-input" placeholder="New Author Name">
+                        <input type="text" id="video-date" class="metadata-input" placeholder="New Date (YYYY-MM-DD)">
+                        <input type="text" id="video-location" class="metadata-input" placeholder="New Location">
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="randomize-metadata">
+                        <label for="randomize-metadata">Randomize Metadata</label>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-cog"></i> Advanced Options</h3>
+                    <div class="advanced-options">
+                        <h4>Video Fingerprint Removal</h4>
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="remove-watermarks">
+                            <label for="remove-watermarks">Remove Platform Watermarks</label>
+                        </div>
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="change-codec">
+                            <label for="change-codec">Change Video Codec</label>
+                        </div>
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="add-noise">
+                            <label for="add-noise">Add Visual Noise (makes harder to detect)</label>
+                        </div>
+                        <div class="slider-container" style="margin-top: 10px;">
+                            <label for="noise-amount">Noise Amount: <span id="noise-amount-value">10</span>%</label>
+                            <input type="range" id="noise-amount" class="range-slider" min="0" max="50" value="10">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const videoUpload = document.getElementById('video-upload');
+            const browseBtn = document.getElementById('browse-btn');
+            const uploadArea = document.getElementById('upload-area');
+            const videoPlayer = document.getElementById('video-player');
+            const exportBtn = document.getElementById('export-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const statusMessage = document.getElementById('status-message');
+            const watermarkPreview = document.getElementById('watermark-preview');
+            
+            // Trim controls
+            const trimStart = document.getElementById('trim-start');
+            const trimEnd = document.getElementById('trim-end');
+            const trimStartValue = document.getElementById('trim-start-value');
+            const trimEndValue = document.getElementById('trim-end-value');
+            const trimStartTime = document.getElementById('trim-start-time');
+            const trimEndTime = document.getElementById('trim-end-time');
+            
+            // Crop controls
+            const enableCrop = document.getElementById('enable-crop');
+            const cropOptions = document.getElementById('crop-options');
+            const cropWidth = document.getElementById('crop-width');
+            const cropWidthValue = document.getElementById('crop-width-value');
+            const cropHeight = document.getElementById('crop-height');
+            const cropHeightValue = document.getElementById('crop-height-value');
+            const cropX = document.getElementById('crop-x');
+            const cropXValue = document.getElementById('crop-x-value');
+            const cropY = document.getElementById('crop-y');
+            const cropYValue = document.getElementById('crop-y-value');
+            
+            // Logo controls
+            const enableLogo = document.getElementById('enable-logo');
+            const logoUploadSection = document.getElementById('logo-upload-section');
+            const logoUpload = document.getElementById('logo-upload');
+            const uploadLogoBtn = document.getElementById('upload-logo-btn');
+            const logoPreview = document.getElementById('logo-preview');
+            const logoOpacity = document.getElementById('logo-opacity');
+            const logoOpacityValue = document.getElementById('logo-opacity-value');
+            const logoSize = document.getElementById('logo-size');
+            const logoSizeValue = document.getElementById('logo-size-value');
+            const logoPositionX = document.getElementById('logo-position-x');
+            const logoPositionXValue = document.getElementById('logo-position-x-value');
+            const logoPositionY = document.getElementById('logo-position-y');
+            const logoPositionYValue = document.getElementById('logo-position-y-value');
+            
+            // Audio controls
+            const volumeControl = document.getElementById('volume-control');
+            const volumeValue = document.getElementById('volume-value');
+            const muteAudio = document.getElementById('mute-audio');
+            const replaceAudio = document.getElementById('replace-audio');
+            const audioUploadSection = document.getElementById('audio-upload-section');
+            const audioUpload = document.getElementById('audio-upload');
+            const uploadAudioBtn = document.getElementById('upload-audio-btn');
+            const changePitch = document.getElementById('change-pitch');
+            const pitchOptions = document.getElementById('pitch-options');
+            const pitchControl = document.getElementById('pitch-control');
+            const pitchValue = document.getElementById('pitch-value');
+            
+            // Video effects
+            const brightnessControl = document.getElementById('brightness-control');
+            const brightnessValue = document.getElementById('brightness-value');
+            const contrastControl = document.getElementById('contrast-control');
+            const contrastValue = document.getElementById('contrast-value');
+            const saturationControl = document.getElementById('saturation-control');
+            const saturationValue = document.getElementById('saturation-value');
+            const effectPresets = document.querySelectorAll('.effect-preset');
+            
+            // Speed & format
+            const speedControl = document.getElementById('speed-control');
+            const speedValue = document.getElementById('speed-value');
+            const changeResolution = document.getElementById('change-resolution');
+            const resolutionOptions = document.getElementById('resolution-options');
+            const resolutionSelect = document.getElementById('resolution-select');
+            const customResolution = document.getElementById('custom-resolution');
+            const customWidth = document.getElementById('custom-width');
+            const customHeight = document.getElementById('custom-height');
+            
+            // Metadata
+            const videoTitle = document.getElementById('video-title');
+            const videoAuthor = document.getElementById('video-author');
+            const videoDate = document.getElementById('video-date');
+            const videoLocation = document.getElementById('video-location');
+            const randomizeMetadata = document.getElementById('randomize-metadata');
+            
+            // Advanced options
+            const removeWatermarks = document.getElementById('remove-watermarks');
+            const changeCodec = document.getElementById('change-codec');
+            const addNoise = document.getElementById('add-noise');
+            const noiseAmount = document.getElementById('noise-amount');
+            const noiseAmountValue = document.getElementById('noise-amount-value');
+            
+            // Variables
+            let videoFile = null;
+            let videoUrl = null;
+            let videoDuration = 0;
+            let logoFile = null;
+            let audioFile = null;
+            let currentFilter = 'none';
+            let originalVideoWidth = 0;
+            let originalVideoHeight = 0;
+            
+            // Event Listeners
+            browseBtn.addEventListener('click', () => videoUpload.click());
+            uploadArea.addEventListener('click', () => videoUpload.click());
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('drop', handleDrop);
+            videoUpload.addEventListener('change', handleVideoUpload);
+            
+            // Trim controls
+            trimStart.addEventListener('input', updateTrimValues);
+            trimEnd.addEventListener('input', updateTrimValues);
+            trimStartTime.addEventListener('change', updateTrimFromInput);
+            trimEndTime.addEventListener('change', updateTrimFromInput);
+            
+            // Crop controls
+            enableCrop.addEventListener('change', toggleCropOptions);
+            cropWidth.addEventListener('input', updateCropWidth);
+            cropHeight.addEventListener('input', updateCropHeight);
+            cropX.addEventListener('input', updateCropX);
+            cropY.addEventListener('input', updateCropY);
+            
+            // Logo controls
+            enableLogo.addEventListener('change', toggleLogoSection);
+            uploadLogoBtn.addEventListener('click', () => logoUpload.click());
+            logoUpload.addEventListener('change', handleLogoUpload);
+            logoOpacity.addEventListener('input', updateLogoOpacity);
+            logoSize.addEventListener('input', updateLogoSize);
+            logoPositionX.addEventListener('input', updateLogoPositionX);
+            logoPositionY.addEventListener('input', updateLogoPositionY);
+            
+            // Audio controls
+            volumeControl.addEventListener('input', updateVolume);
+            muteAudio.addEventListener('change', toggleMute);
+            replaceAudio.addEventListener('change', toggleReplaceAudio);
+            uploadAudioBtn.addEventListener('click', () => audioUpload.click());
+            audioUpload.addEventListener('change', handleAudioUpload);
+            changePitch.addEventListener('change', togglePitchOptions);
+            pitchControl.addEventListener('input', updatePitch);
+            
+            // Video effects
+            brightnessControl.addEventListener('input', updateBrightness);
+            contrastControl.addEventListener('input', updateContrast);
+            saturationControl.addEventListener('input', updateSaturation);
+            effectPresets.forEach(preset => {
+                preset.addEventListener('click', applyEffectPreset);
+            });
+            
+            // Speed & format
+            speedControl.addEventListener('input', updateSpeed);
+            changeResolution.addEventListener('change', toggleResolutionOptions);
+            resolutionSelect.addEventListener('change', handleResolutionChange);
+            
+            // Metadata
+            randomizeMetadata.addEventListener('change', handleRandomizeMetadata);
+            
+            // Advanced options
+            noiseAmount.addEventListener('input', updateNoiseAmount);
+            
+            // Export
+            exportBtn.addEventListener('click', exportVideo);
+            
+            // Functions
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadArea.style.borderColor = 'var(--primary-color)';
+                uploadArea.style.backgroundColor = 'rgba(106, 17, 203, 0.1)';
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadArea.style.borderColor = '#ccc';
+                uploadArea.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                
+                if (e.dataTransfer.files.length) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.type.startsWith('video/')) {
+                        handleVideoFile(file);
+                    } else {
+                        alert('Please upload a video file.');
+                    }
+                }
+            }
+            
+            function handleVideoUpload(e) {
+                if (e.target.files.length) {
+                    const file = e.target.files[0];
+                    handleVideoFile(file);
+                }
+            }
+            
+            function handleVideoFile(file) {
+                // Check file size (up to 5GB)
+                if (file.size > 5 * 1024 * 1024 * 1024) {
+                    alert('File size exceeds 5GB limit. Please choose a smaller file.');
+                    return;
+                }
+                
+                videoFile = file;
+                
+                if (videoUrl) {
+                    URL.revokeObjectURL(videoUrl);
+                }
+                
+                videoUrl = URL.createObjectURL(file);
+                videoPlayer.src = videoUrl;
+                
+                videoPlayer.onloadedmetadata = function() {
+                    videoDuration = videoPlayer.duration;
+                    originalVideoWidth = videoPlayer.videoWidth;
+                    originalVideoHeight = videoPlayer.videoHeight;
+                    updateDurationDisplay();
+                    exportBtn.disabled = false;
+                    
+                    // Set default custom resolution values
+                    customWidth.value = originalVideoWidth;
+                    customHeight.value = originalVideoHeight;
+                };
+                
+                // Update UI
+                uploadArea.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                    <h3>${file.name}</h3>
+                    <p>${formatFileSize(file.size)}</p>
+                    <button class="btn btn-secondary" id="change-video-btn">
+                        <i class="fas fa-exchange-alt"></i> Change Video
+                    </button>
+                `;
+                
+                document.getElementById('change-video-btn').addEventListener('click', () => videoUpload.click());
+                
+                // Auto-fill metadata with random values
+                if (randomizeMetadata.checked) {
+                    generateRandomMetadata();
+                }
+            }
+            
+            function updateDurationDisplay() {
+                trimStart.max = videoDuration;
+                trimEnd.max = videoDuration;
+                trimEnd.value = videoDuration;
+                
+                trimStartValue.textContent = formatTime(trimStart.value);
+                trimEndValue.textContent = formatTime(trimEnd.value);
+                
+                trimStartTime.value = formatTime(trimStart.value);
+                trimEndTime.value = formatTime(trimEnd.value);
+            }
+            
+            function updateTrimValues() {
+                trimStartValue.textContent = formatTime(trimStart.value);
+                trimEndValue.textContent = formatTime(trimEnd.value);
+                
+                trimStartTime.value = formatTime(trimStart.value);
+                trimEndTime.value = formatTime(trimEnd.value);
+                
+                // Update video player current time for preview
+                if (videoPlayer.currentTime < trimStart.value || videoPlayer.currentTime > trimEnd.value) {
+                    videoPlayer.currentTime = trimStart.value;
+                }
+            }
+            
+            function updateTrimFromInput() {
+                const startTime = parseTime(trimStartTime.value);
+                const endTime = parseTime(trimEndTime.value);
+                
+                if (startTime >= 0 && startTime <= videoDuration) {
+                    trimStart.value = startTime;
+                    trimStartValue.textContent = formatTime(startTime);
+                }
+                
+                if (endTime >= 0 && endTime <= videoDuration && endTime > startTime) {
+                    trimEnd.value = endTime;
+                    trimEndValue.textContent = formatTime(endTime);
+                }
+            }
+            
+            function toggleCropOptions() {
+                cropOptions.style.display = enableCrop.checked ? 'block' : 'none';
+            }
+            
+            function updateCropWidth() {
+                cropWidthValue.textContent = cropWidth.value;
+            }
+            
+            function updateCropHeight() {
+                cropHeightValue.textContent = cropHeight.value;
+            }
+            
+            function updateCropX() {
+                cropXValue.textContent = cropX.value;
+            }
+            
+            function updateCropY() {
+                cropYValue.textContent = cropY.value;
+            }
+            
+            function toggleLogoSection() {
+                logoUploadSection.style.display = enableLogo.checked ? 'block' : 'none';
+                watermarkPreview.style.display = enableLogo.checked && logoFile ? 'block' : 'none';
+            }
+            
+            function handleLogoUpload(e) {
+                if (e.target.files.length) {
+                    logoFile = e.target.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        logoPreview.src = event.target.result;
+                        logoPreview.style.display = 'block';
+                        
+                        // Create watermark preview
+                        watermarkPreview.style.display = 'block';
+                        watermarkPreview.innerHTML = `
+                            <img src="${event.target.result}" style="
+                                opacity: ${logoOpacity.value / 100};
+                                width: ${logoSize.value}%;
+                                position: absolute;
+                                top: ${logoPositionY.value}%;
+                                left: ${logoPositionX.value}%;
+                                transform: translate(-${logoPositionX.value}%, -${logoPositionY.value}%);
+                                pointer-events: none;
+                            ">
+                        `;
+                    };
+                    
+                    reader.readAsDataURL(logoFile);
+                }
+            }
+            
+            function updateLogoOpacity() {
+                logoOpacityValue.textContent = logoOpacity.value;
+                if (watermarkPreview.firstChild) {
+                    watermarkPreview.firstChild.style.opacity = logoOpacity.value / 100;
+                }
+            }
+            
+            function updateLogoSize() {
+                logoSizeValue.textContent = logoSize.value;
+                if (watermarkPreview.firstChild) {
+                    watermarkPreview.firstChild.style.width = logoSize.value + '%';
+                }
+            }
+            
+            function updateLogoPositionX() {
+                logoPositionXValue.textContent = logoPositionX.value;
+                if (watermarkPreview.firstChild) {
+                    watermarkPreview.firstChild.style.left = logoPositionX.value + '%';
+                    watermarkPreview.firstChild.style.transform = `translate(-${logoPositionX.value}%, -${logoPositionY.value}%)`;
+                }
+            }
+            
+            function updateLogoPositionY() {
+                logoPositionYValue.textContent = logoPositionY.value;
+                if (watermarkPreview.firstChild) {
+                    watermarkPreview.firstChild.style.top = logoPositionY.value + '%';
+                    watermarkPreview.firstChild.style.transform = `translate(-${logoPositionX.value}%, -${logoPositionY.value}%)`;
+                }
+            }
+            
+            function updateVolume() {
+                volumeValue.textContent = volumeControl.value;
+                videoPlayer.volume = volumeControl.value / 100;
+            }
+            
+            function toggleMute() {
+                videoPlayer.muted = muteAudio.checked;
+            }
+            
+            function toggleReplaceAudio() {
+                audioUploadSection.style.display = replaceAudio.checked ? 'block' : 'none';
+            }
+            
+            function handleAudioUpload(e) {
+                if (e.target.files.length) {
+                    audioFile = e.target.files[0];
+                }
+            }
+            
+            function togglePitchOptions() {
+                pitchOptions.style.display = changePitch.checked ? 'block' : 'none';
+            }
+            
+            function updatePitch() {
+                pitchValue.textContent = pitchControl.value;
+            }
+            
+            function updateBrightness() {
+                brightnessValue.textContent = brightnessControl.value;
+                applyVideoFilters();
+            }
+            
+            function updateContrast() {
+                contrastValue.textContent = contrastControl.value;
+                applyVideoFilters();
+            }
+            
+            function updateSaturation() {
+                saturationValue.textContent = saturationControl.value;
+                applyVideoFilters();
+            }
+            
+            function updateNoiseAmount() {
+                noiseAmountValue.textContent = noiseAmount.value;
+            }
+            
+            function applyEffectPreset(e) {
+                effectPresets.forEach(preset => preset.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                applyVideoFilters();
+            }
+            
+            function applyVideoFilters() {
+                let filterString = '';
+                
+                // Brightness, contrast, saturation
+                filterString += `brightness(${brightnessControl.value / 100}) `;
+                filterString += `contrast(${contrastControl.value / 100}) `;
+                filterString += `saturate(${saturationControl.value / 100}) `;
+                
+                // Preset filters
+                switch(currentFilter) {
+                    case 'grayscale':
+                        filterString += 'grayscale(100%) ';
+                        break;
+                    case 'sepia':
+                        filterString += 'sepia(100%) ';
+                        break;
+                    case 'invert':
+                        filterString += 'invert(100%) ';
+                        break;
+                    case 'blur':
+                        filterString += 'blur(2px) ';
+                        break;
+                    case 'vintage':
+                        filterString += 'sepia(50%) contrast(120%) brightness(90%) saturate(80%) ';
+                        break;
+                }
+                
+                // Visual noise if enabled
+                if (addNoise.checked) {
+                    filterString += `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 ${noiseAmount.value / 100} 0"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>#noise')`;
+                }
+                
+                videoPlayer.style.filter = filterString.trim();
+            }
+            
+            function updateSpeed() {
+                speedValue.textContent = speedControl.value;
+                videoPlayer.playbackRate = parseFloat(speedControl.value);
+            }
+            
+            function toggleResolutionOptions() {
+                resolutionOptions.style.display = changeResolution.checked ? 'block' : 'none';
+            }
+            
+            function handleResolutionChange() {
+                customResolution.style.display = resolutionSelect.value === 'custom' ? 'block' : 'none';
+            }
+            
+            function handleRandomizeMetadata() {
+                if (randomizeMetadata.checked) {
+                    generateRandomMetadata();
+                } else {
+                    // Clear metadata fields
+                    videoTitle.value = '';
+                    videoAuthor.value = '';
+                    videoDate.value = '';
+                    videoLocation.value = '';
+                }
+            }
+            
+            function generateRandomMetadata() {
+                // Random titles
+                const titles = [
+                    "My Vacation Video",
+                    "Personal Recording",
+                    "Family Memories",
+                    "Event Recording",
+                    "Video Diary",
+                    "My Project",
+                    "Personal Video",
+                    "Home Video",
+                    "Private Recording",
+                    "My Collection"
+                ];
+                
+                // Random names
+                const names = [
+                    "John Smith",
+                    "Emma Johnson",
+                    "Michael Williams",
+                    "Sarah Brown",
+                    "David Jones",
+                    "Lisa Garcia",
+                    "Robert Miller",
+                    "Jennifer Davis",
+                    "Thomas Rodriguez",
+                    "Susan Martinez"
+                ];
+                
+                // Random locations
+                const locations = [
+                    "New York, USA",
+                    "London, UK",
+                    "Tokyo, Japan",
+                    "Paris, France",
+                    "Berlin, Germany",
+                    "Sydney, Australia",
+                    "Toronto, Canada",
+                    "Dubai, UAE",
+                    "Singapore",
+                    "Mumbai, India"
+                ];
+                
+                // Generate random date within last 5 years
+                const currentDate = new Date();
+                const pastDate = new Date();
+                pastDate.setFullYear(currentDate.getFullYear() - 5);
+                const randomDate = new Date(pastDate.getTime() + Math.random() * (currentDate.getTime() - pastDate.getTime()));
+                
+                // Set random values
+                videoTitle.value = titles[Math.floor(Math.random() * titles.length)];
+                videoAuthor.value = names[Math.floor(Math.random() * names.length)];
+                videoDate.value = randomDate.toISOString().split('T')[0];
+                videoLocation.value = locations[Math.floor(Math.random() * locations.length)];
+            }
+            
+            async function exportVideo() {
+                if (!videoFile) {
+                    alert('Please upload a video first.');
+                    return;
+                }
+                
+                exportBtn.disabled = true;
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                statusMessage.textContent = 'Initializing video transformation...';
+                
+                try {
+                    // Simulate processing (in a real app, you would use FFmpeg.js or similar)
+                    statusMessage.textContent = 'Removing original fingerprints...';
+                    await simulateProgress(10, 20);
+                    
+                    statusMessage.textContent = 'Applying visual modifications...';
+                    await simulateProgress(30, 40);
+                    
+                    statusMessage.textContent = 'Processing audio changes...';
+                    await simulateProgress(50, 60);
+                    
+                    statusMessage.textContent = 'Updating metadata...';
+                    await simulateProgress(70, 80);
+                    
+                    statusMessage.textContent = 'Finalizing new identity...';
+                    await simulateProgress(90, 100);
+                    
+                    exportComplete();
+                    
+                } catch (error) {
+                    console.error('Error exporting video:', error);
+                    statusMessage.textContent = 'Error: ' + error.message;
+                    exportBtn.disabled = false;
+                }
+            }
+            
+            function simulateProgress(min, max) {
+                return new Promise(resolve => {
+                    let progress = min;
+                    const interval = setInterval(() => {
+                        progress += Math.random() * 2;
+                        if (progress >= max) {
+                            progress = max;
+                            clearInterval(interval);
+                            resolve();
+                        }
+                        progressBar.style.width = `${progress}%`;
+                    }, 100);
+                });
+            }
+            
+            function exportComplete() {
+                statusMessage.textContent = 'Transformation complete! Video identity changed.';
+                
+                // Create a download link (in a real app, this would be the processed video)
+                const a = document.createElement('a');
+                a.href = videoUrl;
+                a.download = `transformed_${videoFile.name.replace(/\.[^/.]+$/, '')}_${Date.now()}.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    exportBtn.disabled = false;
+                }, 5000);
+            }
+            
+            // Utility functions
+            function formatTime(seconds) {
+                seconds = parseFloat(seconds);
+                const hrs = Math.floor(seconds / 3600);
+                const mins = Math.floor((seconds % 3600) / 60);
+                const secs = Math.floor(seconds % 60);
+                
+                return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+            
+            function parseTime(timeString) {
+                const parts = timeString.split(':');
+                if (parts.length === 3) {
+                    return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
+                } else if (parts.length === 2) {
+                    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+                }
+                return parseInt(parts[0]) || 0;
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes >= 1073741824) {
+                    return (bytes / 1073741824).toFixed(2) + ' GB';
+                } else if (bytes >= 1048576) {
+                    return (bytes / 1048576).toFixed(2) + ' MB';
+                } else if (bytes >= 1024) {
+                    return (bytes / 1024).toFixed(2) + ' KB';
+                } else {
+                    return bytes + ' bytes';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
