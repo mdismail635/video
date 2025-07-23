@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Identity Changer</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Advanced Veo3 Style Video Editor</title>
     <style>
         :root {
-            --primary-color: #6a11cb;
-            --secondary-color: #2575fc;
-            --dark-color: #1a1a2e;
-            --light-color: #f8f9fa;
-            --success-color: #38ef7d;
-            --warning-color: #fbb040;
-            --danger-color: #f857a6;
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --dark: #1b263b;
+            --light: #f8f9fa;
+            --danger: #ef233c;
+            --success: #4cc9f0;
         }
         
         * {
@@ -24,1232 +23,1227 @@
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
-            line-height: 1.6;
-            min-height: 100vh;
+            background-color: #f1f3f4;
+            color: var(--dark);
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
         
         header {
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 0 0 10px 10px;
-            margin-bottom: 30px;
-        }
-        
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .editor-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-            margin-top: 20px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
         }
         
-        .video-container {
-            flex: 2;
-            min-width: 300px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            position: relative;
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .controls-container {
-            flex: 1;
-            min-width: 300px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-height: 90vh;
-            overflow-y: auto;
+        .main-content {
+            display: flex;
+            gap: 20px;
+            height: calc(100vh - 150px);
         }
         
-        .video-preview {
-            width: 100%;
+        .editor-panel {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .preview-container {
             background-color: #000;
             border-radius: 8px;
-            margin-bottom: 20px;
+            overflow: hidden;
             position: relative;
+            flex: 1;
         }
         
-        #video-player {
+        #videoPreview {
             width: 100%;
-            max-height: 400px;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+        
+        #previewPlaceholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 18px;
+            background-color: #333;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 15px;
+            background-color: white;
             border-radius: 8px;
-        }
-        
-        .upload-section {
-            margin-bottom: 25px;
-            text-align: center;
-            padding: 30px 20px;
-            border: 2px dashed #ccc;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background-color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .upload-section:hover {
-            border-color: var(--primary-color);
-            background-color: rgba(106, 17, 203, 0.05);
-            transform: translateY(-3px);
-        }
-        
-        .upload-section i {
-            font-size: 50px;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-        
-        .upload-section h3 {
-            margin-bottom: 10px;
-            color: var(--dark-color);
-        }
-        
-        .upload-section p {
-            margin-bottom: 15px;
-            color: #666;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .btn {
-            display: inline-block;
-            padding: 12px 25px;
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            color: white;
+            padding: 10px 20px;
             border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(106, 17, 203, 0.4);
-        }
-        
-        .btn:active {
-            transform: translateY(1px);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(to right, #6c757d, #5a6268);
-            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.3);
-        }
-        
-        .btn-secondary:hover {
-            box-shadow: 0 6px 15px rgba(108, 117, 125, 0.4);
-        }
-        
-        .control-group {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .control-group h3 {
-            margin-bottom: 18px;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-        }
-        
-        .control-group h3 i {
-            margin-right: 10px;
-        }
-        
-        .slider-container {
-            margin-bottom: 18px;
-        }
-        
-        .slider-container label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-        }
-        
-        .range-slider {
-            width: 100%;
-            height: 8px;
-            -webkit-appearance: none;
-            background: #e0e0e0;
-            border-radius: 10px;
-            outline: none;
-            transition: all 0.3s;
-        }
-        
-        .range-slider:hover {
-            background: #d0d0d0;
-        }
-        
-        .range-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        .range-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-        }
-        
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 8px;
             border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: all 0.2s;
+            font-size: 14px;
         }
         
-        .checkbox-container:hover {
-            background-color: #f5f5f5;
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
         }
         
-        .checkbox-container input[type="checkbox"] {
-            margin-right: 12px;
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary-color);
-            cursor: pointer;
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
         }
         
-        .checkbox-container label {
-            font-weight: 500;
-            color: #555;
-            cursor: pointer;
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
         }
         
-        .logo-upload {
-            margin-top: 15px;
+        .btn-success {
+            background-color: var(--success);
+            color: white;
         }
         
-        .logo-preview {
-            max-width: 120px;
-            max-height: 120px;
-            margin-top: 15px;
-            display: none;
+        .timeline-container {
+            background-color: white;
             border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .trim-controls {
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 250px;
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            flex-direction: column;
         }
         
-        .trim-controls input {
+        .tracks {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
         }
         
-        .export-section {
-            text-align: center;
-            margin-top: 25px;
+        .track {
+            display: flex;
+            align-items: center;
+            height: 60px;
+            position: relative;
         }
         
-        .progress-container {
-            margin-top: 20px;
-            display: none;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background-color: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .progress {
-            height: 100%;
-            background: linear-gradient(to right, var(--success-color), #11998e);
-            width: 0%;
-            transition: width 0.3s;
-            border-radius: 10px;
-        }
-        
-        .status-message {
-            margin-top: 10px;
-            font-size: 14px;
+        .track-label {
+            width: 100px;
+            font-size: 12px;
             color: #666;
         }
         
-        .effect-presets {
+        .clips-container {
+            flex: 1;
+            height: 60px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .clip {
+            height: 50px;
+            min-width: 80px;
+            background-color: var(--accent);
+            border-radius: 4px;
+            margin-right: 5px;
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        
-        .effect-preset {
-            padding: 8px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            background-color: #f9f9f9;
-        }
-        
-        .effect-preset:hover {
-            background-color: #f0f0f0;
-            transform: translateY(-2px);
-        }
-        
-        .effect-preset.active {
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            justify-content: center;
+            align-items: center;
             color: white;
-            border-color: var(--primary-color);
-            box-shadow: 0 3px 8px rgba(106, 17, 203, 0.2);
+            font-size: 12px;
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .metadata-group {
-            margin-top: 15px;
+        .clip.active {
+            border: 2px solid var(--dark);
         }
         
-        .metadata-input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
+        .playhead {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2px;
+            height: 100%;
+            background-color: var(--danger);
+            z-index: 10;
+            pointer-events: none;
         }
         
-        .watermark-options {
-            margin-top: 15px;
-        }
-        
-        .advanced-options {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #f9f9f9;
+        .sidebar {
+            flex: 1;
+            background-color: white;
             border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            overflow-y: auto;
         }
         
-        .advanced-options h4 {
-            margin-bottom: 10px;
-            color: var(--primary-color);
+        .sidebar-section {
+            margin-bottom: 25px;
         }
         
-        @media (max-width: 768px) {
-            .editor-container {
-                flex-direction: column;
-            }
-            
-            .video-container, .controls-container {
-                flex: 1 1 100%;
-            }
-            
-            header h1 {
-                font-size: 2rem;
-            }
-            
-            .upload-section {
-                padding: 20px 15px;
-            }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .effect-card {
+            aspect-ratio: 1/1;
+            background-color: #e9ecef;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 5px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .export-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .export-option {
+            padding: 12px;
+            background-color: #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .export-option.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Font Awesome icons */
+        .material-icons {
+            font-family: 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Transition effects panel */
+        .transition-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .transition-card {
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        /* Text editor modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Cloud storage panel */
+        .cloud-storage {
+            margin-top: 15px;
+        }
+        
+        .storage-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        
+        .storage-item:hover {
+            background-color: #e9ecef;
         }
     </style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Load FFmpeg -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1><i class="fas fa-fingerprint"></i> Video Identity Changer</h1>
-        <p>Modify downloaded videos to change their metadata and appearance</p>
-    </header>
-    
     <div class="container">
-        <div class="editor-container">
-            <div class="video-container">
-                <div class="upload-section" id="upload-area">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <h3>Upload Your Video</h3>
-                    <p>Drag & drop a downloaded video here or click to browse</p>
-                    <p>Supports MP4, MOV, AVI, MKV (up to 5GB)</p>
-                    <input type="file" id="video-upload" accept="video/*" style="display: none;">
-                    <button class="btn" id="browse-btn">Browse Files</button>
+        <header>
+            <div class="logo">
+                <i class="material-icons">videocam</i>
+                <span>Advanced Veo3 Editor</span>
+            </div>
+            <div>
+                <button id="exportBtn" class="btn btn-success">
+                    <i class="material-icons">download</i>
+                    Export Video
+                </button>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="editor-panel">
+                <div class="preview-container">
+                    <div id="previewPlaceholder">
+                        <i class="material-icons" style="font-size: 48px; margin-bottom: 10px;">videocam_off</i>
+                        <div>Click Record to start capturing video</div>
+                    </div>
+                    <video id="videoPreview" controls></video>
+                    <canvas id="videoCanvas" class="hidden"></canvas>
                 </div>
                 
-                <div class="video-preview">
-                    <video id="video-player" controls></video>
-                    <div id="watermark-preview" style="position: absolute; display: none;"></div>
-                </div>
-                
-                <div class="export-section">
-                    <button class="btn" id="export-btn" disabled>
-                        <i class="fas fa-magic"></i> Transform Video Identity
+                <div class="controls">
+                    <button id="recordBtn" class="btn btn-primary">
+                        <i class="material-icons">fiber_manual_record</i>
+                        Record
                     </button>
-                    <div class="progress-container" id="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress" id="progress-bar"></div>
+                    <button id="importBtn" class="btn btn-outline">
+                        <i class="material-icons">folder_open</i>
+                        Import
+                    </button>
+                    <button id="addTextBtn" class="btn btn-outline">
+                        <i class="material-icons">title</i>
+                        Add Text
+                    </button>
+                    <button id="playBtn" class="btn btn-outline" disabled>
+                        <i class="material-icons">play_arrow</i>
+                        Play
+                    </button>
+                    <button id="splitBtn" class="btn btn-outline" disabled>
+                        <i class="material-icons">content_cut</i>
+                        Split
+                    </button>
+                    <button id="deleteBtn" class="btn btn-danger" disabled>
+                        <i class="material-icons">delete</i>
+                        Delete
+                    </button>
+                </div>
+                
+                <div class="timeline-container">
+                    <div class="section-title">Multi-track Timeline</div>
+                    <div class="tracks" id="tracksContainer">
+                        <div class="track">
+                            <div class="track-label">Video Track 1</div>
+                            <div class="clips-container" id="videoTrack1">
+                                <div class="playhead" id="playhead"></div>
+                            </div>
                         </div>
-                        <p class="status-message" id="status-message">Processing...</p>
+                        <div class="track">
+                            <div class="track-label">Video Track 2</div>
+                            <div class="clips-container" id="videoTrack2"></div>
+                        </div>
+                        <div class="track">
+                            <div class="track-label">Audio Track</div>
+                            <div class="clips-container" id="audioTrack"></div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="controls-container">
-                <div class="control-group">
-                    <h3><i class="fas fa-cut"></i> Trim Video</h3>
-                    <div class="slider-container">
-                        <label for="trim-start">Start Time: <span id="trim-start-value">00:00:00</span></label>
-                        <input type="range" id="trim-start" class="range-slider" min="0" max="100" value="0">
-                    </div>
-                    <div class="slider-container">
-                        <label for="trim-end">End Time: <span id="trim-end-value">00:00:00</span></label>
-                        <input type="range" id="trim-end" class="range-slider" min="0" max="100" value="100">
-                    </div>
-                    <div class="trim-controls">
-                        <input type="text" id="trim-start-time" placeholder="00:00:00">
-                        <input type="text" id="trim-end-time" placeholder="00:00:00">
-                    </div>
-                </div>
-                
-                <div class="control-group">
-                    <h3><i class="fas fa-crop-alt"></i> Crop & Resize</h3>
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="enable-crop">
-                        <label for="enable-crop">Crop Video</label>
-                    </div>
-                    <div id="crop-options" style="display: none; margin-top: 10px;">
-                        <div class="slider-container">
-                            <label for="crop-width">Width: <span id="crop-width-value">100</span>%</label>
-                            <input type="range" id="crop-width" class="range-slider" min="50" max="100" value="100">
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <div class="section-title">Video Effects</div>
+                    <div class="effects-grid">
+                        <div class="effect-card" data-effect="blur">
+                            <i class="material-icons">blur_on</i>
+                            Blur
                         </div>
-                        <div class="slider-container">
-                            <label for="crop-height">Height: <span id="crop-height-value">100</span>%</label>
-                            <input type="range" id="crop-height" class="range-slider" min="50" max="100" value="100">
+                        <div class="effect-card" data-effect="grayscale">
+                            <i class="material-icons">invert_colors_off</i>
+                            B&W
                         </div>
-                        <div class="slider-container">
-                            <label for="crop-x">X Position: <span id="crop-x-value">0</span>%</label>
-                            <input type="range" id="crop-x" class="range-slider" min="0" max="100" value="0">
+                        <div class="effect-card" data-effect="sepia">
+                            <i class="material-icons">photo_filter</i>
+                            Sepia
                         </div>
-                        <div class="slider-container">
-                            <label for="crop-y">Y Position: <span id="crop-y-value">0</span>%</label>
-                            <input type="range" id="crop-y" class="range-slider" min="0" max="100" value="0">
+                        <div class="effect-card" data-effect="brightness">
+                            <i class="material-icons">brightness_high</i>
+                            Brightness
+                        </div>
+                        <div class="effect-card" data-effect="contrast">
+                            <i class="material-icons">contrast</i>
+                            Contrast
+                        </div>
+                        <div class="effect-card" data-effect="saturate">
+                            <i class="material-icons">tonality</i>
+                            Saturate
                         </div>
                     </div>
                 </div>
                 
-                <div class="control-group">
-                    <h3><i class="fas fa-image"></i> Watermark & Logo</h3>
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="enable-logo">
-                        <label for="enable-logo">Add Watermark/Logo</label>
-                    </div>
-                    <div class="logo-upload" id="logo-upload-section" style="display: none;">
-                        <input type="file" id="logo-upload" accept="image/*" style="display: none;">
-                        <button class="btn btn-secondary" id="upload-logo-btn">
-                            <i class="fas fa-upload"></i> Upload Watermark
-                        </button>
-                        <img id="logo-preview" class="logo-preview">
-                        <div class="slider-container" style="margin-top: 15px;">
-                            <label for="logo-opacity">Opacity: <span id="logo-opacity-value">70</span>%</label>
-                            <input type="range" id="logo-opacity" class="range-slider" min="0" max="100" value="70">
+                <div class="sidebar-section">
+                    <div class="section-title">Transitions</div>
+                    <div class="transition-panel">
+                        <div class="transition-card" data-transition="fade">
+                            <i class="material-icons">animation</i>
+                            Fade
                         </div>
-                        <div class="slider-container">
-                            <label for="logo-size">Size: <span id="logo-size-value">20</span>%</label>
-                            <input type="range" id="logo-size" class="range-slider" min="5" max="50" value="20">
+                        <div class="transition-card" data-transition="slide">
+                            <i class="material-icons">slideshow</i>
+                            Slide
                         </div>
-                        <div class="slider-container">
-                            <label for="logo-position-x">Horizontal Position: <span id="logo-position-x-value">90</span>%</label>
-                            <input type="range" id="logo-position-x" class="range-slider" min="0" max="100" value="90">
+                        <div class="transition-card" data-transition="zoom">
+                            <i class="material-icons">zoom_in</i>
+                            Zoom
                         </div>
-                        <div class="slider-container">
-                            <label for="logo-position-y">Vertical Position: <span id="logo-position-y-value">90</span>%</label>
-                            <input type="range" id="logo-position-y" class="range-slider" min="0" max="100" value="90">
+                        <div class="transition-card" data-transition="wipe">
+                            <i class="material-icons">transform</i>
+                            Wipe
                         </div>
                     </div>
                 </div>
                 
-                <div class="control-group">
-                    <h3><i class="fas fa-volume-up"></i> Audio Modifications</h3>
-                    <div class="slider-container">
-                        <label for="volume-control">Volume: <span id="volume-value">100</span>%</label>
-                        <input type="range" id="volume-control" class="range-slider" min="0" max="200" value="100">
-                    </div>
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="mute-audio">
-                        <label for="mute-audio">Mute Original Audio</label>
-                    </div>
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="replace-audio">
-                        <label for="replace-audio">Replace Audio Track</label>
-                    </div>
-                    <div id="audio-upload-section" style="display: none; margin-top: 10px;">
-                        <input type="file" id="audio-upload" accept="audio/*" style="display: none;">
-                        <button class="btn btn-secondary" id="upload-audio-btn">
-                            <i class="fas fa-music"></i> Upload Audio File
-                        </button>
-                    </div>
-                    <div class="checkbox-container" style="margin-top: 10px;">
-                        <input type="checkbox" id="change-pitch">
-                        <label for="change-pitch">Change Audio Pitch (make sound different)</label>
-                    </div>
-                    <div id="pitch-options" style="display: none; margin-top: 10px;">
-                        <div class="slider-container">
-                            <label for="pitch-control">Pitch Shift: <span id="pitch-value">0</span> semitones</label>
-                            <input type="range" id="pitch-control" class="range-slider" min="-12" max="12" value="0">
+                <div class="sidebar-section">
+                    <div class="section-title">Motion Graphics</div>
+                    <div class="effects-grid">
+                        <div class="effect-card" data-template="lowerThird">
+                            <i class="material-icons">subtitles</i>
+                            Lower Third
+                        </div>
+                        <div class="effect-card" data-template="title">
+                            <i class="material-icons">title</i>
+                            Title
+                        </div>
+                        <div class="effect-card" data-template="endCredits">
+                            <i class="material-icons">format_align_center</i>
+                            End Credits
+                        </div>
+                        <div class="effect-card" data-template="social">
+                            <i class="material-icons">share</i>
+                            Social Media
                         </div>
                     </div>
                 </div>
                 
-                <div class="control-group">
-                    <h3><i class="fas fa-sliders-h"></i> Video Effects</h3>
-                    <div class="slider-container">
-                        <label for="brightness-control">Brightness: <span id="brightness-value">100</span>%</label>
-                        <input type="range" id="brightness-control" class="range-slider" min="0" max="200" value="100">
-                    </div>
-                    <div class="slider-container">
-                        <label for="contrast-control">Contrast: <span id="contrast-value">100</span>%</label>
-                        <input type="range" id="contrast-control" class="range-slider" min="0" max="200" value="100">
-                    </div>
-                    <div class="slider-container">
-                        <label for="saturation-control">Saturation: <span id="saturation-value">100</span>%</label>
-                        <input type="range" id="saturation-control" class="range-slider" min="0" max="200" value="100">
-                    </div>
-                    <div class="effect-presets">
-                        <div class="effect-preset active" data-filter="none">Original</div>
-                        <div class="effect-preset" data-filter="grayscale">Grayscale</div>
-                        <div class="effect-preset" data-filter="sepia">Sepia</div>
-                        <div class="effect-preset" data-filter="invert">Invert</div>
-                        <div class="effect-preset" data-filter="blur">Blur</div>
-                        <div class="effect-preset" data-filter="vintage">Vintage</div>
-                    </div>
-                </div>
-                
-                <div class="control-group">
-                    <h3><i class="fas fa-tachometer-alt"></i> Speed & Format</h3>
-                    <div class="slider-container">
-                        <label for="speed-control">Playback Speed: <span id="speed-value">1.0</span>x</label>
-                        <input type="range" id="speed-control" class="range-slider" min="0.25" max="4" step="0.25" value="1">
-                    </div>
-                    <div class="checkbox-container" style="margin-top: 10px;">
-                        <input type="checkbox" id="change-resolution">
-                        <label for="change-resolution">Change Resolution</label>
-                    </div>
-                    <div id="resolution-options" style="display: none; margin-top: 10px;">
-                        <select id="resolution-select" class="metadata-input">
-                            <option value="original">Keep Original</option>
-                            <option value="720p">720p (HD)</option>
-                            <option value="480p">480p (SD)</option>
-                            <option value="360p">360p</option>
-                            <option value="240p">240p</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                        <div id="custom-resolution" style="display: none; margin-top: 10px;">
-                            <input type="number" id="custom-width" class="metadata-input" placeholder="Width (px)">
-                            <input type="number" id="custom-height" class="metadata-input" placeholder="Height (px)">
+                <div class="sidebar-section">
+                    <div class="section-title">Cloud Storage</div>
+                    <div class="cloud-storage">
+                        <div class="storage-item">
+                            <i class="material-icons" style="margin-right: 8px;">cloud</i>
+                            Google Drive
+                        </div>
+                        <div class="storage-item">
+                            <i class="material-icons" style="margin-right: 8px;">cloud</i>
+                            Dropbox
+                        </div>
+                        <div class="storage-item">
+                            <i class="material-icons" style="margin-right: 8px;">cloud</i>
+                            OneDrive
                         </div>
                     </div>
                 </div>
                 
-                <div class="control-group">
-                    <h3><i class="fas fa-info-circle"></i> Metadata Changer</h3>
-                    <div class="metadata-group">
-                        <input type="text" id="video-title" class="metadata-input" placeholder="New Video Title">
-                        <input type="text" id="video-author" class="metadata-input" placeholder="New Author Name">
-                        <input type="text" id="video-date" class="metadata-input" placeholder="New Date (YYYY-MM-DD)">
-                        <input type="text" id="video-location" class="metadata-input" placeholder="New Location">
+                <div class="sidebar-section">
+                    <div class="section-title">Export Settings</div>
+                    <div class="export-options">
+                        <div class="export-option active" data-quality="1080">
+                            <span>1080p (Full HD)</span>
+                            <i class="material-icons">check</i>
+                        </div>
+                        <div class="export-option" data-quality="720">
+                            <span>720p (HD)</span>
+                            <i class="material-icons">check</i>
+                        </div>
+                        <div class="export-option" data-quality="480">
+                            <span>480p (SD)</span>
+                            <i class="material-icons">check</i>
+                        </div>
                     </div>
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="randomize-metadata">
-                        <label for="randomize-metadata">Randomize Metadata</label>
-                    </div>
-                </div>
-                
-                <div class="control-group">
-                    <h3><i class="fas fa-cog"></i> Advanced Options</h3>
-                    <div class="advanced-options">
-                        <h4>Video Fingerprint Removal</h4>
-                        <div class="checkbox-container">
-                            <input type="checkbox" id="remove-watermarks">
-                            <label for="remove-watermarks">Remove Platform Watermarks</label>
-                        </div>
-                        <div class="checkbox-container">
-                            <input type="checkbox" id="change-codec">
-                            <label for="change-codec">Change Video Codec</label>
-                        </div>
-                        <div class="checkbox-container">
-                            <input type="checkbox" id="add-noise">
-                            <label for="add-noise">Add Visual Noise (makes harder to detect)</label>
-                        </div>
-                        <div class="slider-container" style="margin-top: 10px;">
-                            <label for="noise-amount">Noise Amount: <span id="noise-amount-value">10</span>%</label>
-                            <input type="range" id="noise-amount" class="range-slider" min="0" max="50" value="10">
-                        </div>
+                    <div class="progress-container hidden" id="exportProgressContainer">
+                        <div class="progress-bar" id="exportProgressBar"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Text Editor Modal -->
+    <div class="modal" id="textEditorModal">
+        <div class="modal-content">
+            <h3>Add Text to Video</h3>
+            <div class="form-group">
+                <label for="textContent">Text Content</label>
+                <textarea id="textContent" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="textFont">Font</label>
+                <select id="textFont">
+                    <option value="Arial">Arial</option>
+                    <option value="Roboto">Roboto</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Courier New">Courier New</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="textColor">Color</label>
+                <input type="color" id="textColor" value="#ffffff">
+            </div>
+            <div class="form-group">
+                <label for="textDuration">Duration (seconds)</label>
+                <input type="number" id="textDuration" value="5" min="1">
+            </div>
+            <div class="modal-actions">
+                <button id="cancelTextBtn" class="btn btn-outline">Cancel</button>
+                <button id="applyTextBtn" class="btn btn-primary">Apply</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
-            const videoUpload = document.getElementById('video-upload');
-            const browseBtn = document.getElementById('browse-btn');
-            const uploadArea = document.getElementById('upload-area');
-            const videoPlayer = document.getElementById('video-player');
-            const exportBtn = document.getElementById('export-btn');
-            const progressContainer = document.getElementById('progress-container');
-            const progressBar = document.getElementById('progress-bar');
-            const statusMessage = document.getElementById('status-message');
-            const watermarkPreview = document.getElementById('watermark-preview');
+        // DOM Elements
+        const videoPreview = document.getElementById('videoPreview');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const videoCanvas = document.getElementById('videoCanvas');
+        const recordBtn = document.getElementById('recordBtn');
+        const importBtn = document.getElementById('importBtn');
+        const addTextBtn = document.getElementById('addTextBtn');
+        const playBtn = document.getElementById('playBtn');
+        const splitBtn = document.getElementById('splitBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const tracksContainer = document.getElementById('tracksContainer');
+        const videoTrack1 = document.getElementById('videoTrack1');
+        const videoTrack2 = document.getElementById('videoTrack2');
+        const audioTrack = document.getElementById('audioTrack');
+        const playhead = document.getElementById('playhead');
+        const exportProgressContainer = document.getElementById('exportProgressContainer');
+        const exportProgressBar = document.getElementById('exportProgressBar');
+        
+        // Modal elements
+        const textEditorModal = document.getElementById('textEditorModal');
+        const textContent = document.getElementById('textContent');
+        const textFont = document.getElementById('textFont');
+        const textColor = document.getElementById('textColor');
+        const textDuration = document.getElementById('textDuration');
+        const applyTextBtn = document.getElementById('applyTextBtn');
+        const cancelTextBtn = document.getElementById('cancelTextBtn');
+        
+        // State
+        let mediaRecorder;
+        let recordedChunks = [];
+        let videoClips = [];
+        let audioClips = [];
+        let textElements = [];
+        let activeClipIndex = -1;
+        let isRecording = false;
+        let isPlaying = false;
+        let currentTime = 0;
+        let playInterval;
+        let videoStream;
+        let totalDuration = 0;
+        let ffmpeg = null;
+        
+        // Initialize FFmpeg
+        async function initFFmpeg() {
+            const { createFFmpeg } = FFmpeg;
+            ffmpeg = createFFmpeg({ log: true });
+            await ffmpeg.load();
+            console.log('FFmpeg loaded');
+        }
+        
+        // Initialize
+        init();
+        
+        function init() {
+            setupEventListeners();
+            checkCameraAccess();
+            initFFmpeg();
+        }
+        
+        function setupEventListeners() {
+            // Record button
+            recordBtn.addEventListener('click', toggleRecording);
             
-            // Trim controls
-            const trimStart = document.getElementById('trim-start');
-            const trimEnd = document.getElementById('trim-end');
-            const trimStartValue = document.getElementById('trim-start-value');
-            const trimEndValue = document.getElementById('trim-end-value');
-            const trimStartTime = document.getElementById('trim-start-time');
-            const trimEndTime = document.getElementById('trim-end-time');
+            // Import button
+            importBtn.addEventListener('click', importVideo);
             
-            // Crop controls
-            const enableCrop = document.getElementById('enable-crop');
-            const cropOptions = document.getElementById('crop-options');
-            const cropWidth = document.getElementById('crop-width');
-            const cropWidthValue = document.getElementById('crop-width-value');
-            const cropHeight = document.getElementById('crop-height');
-            const cropHeightValue = document.getElementById('crop-height-value');
-            const cropX = document.getElementById('crop-x');
-            const cropXValue = document.getElementById('crop-x-value');
-            const cropY = document.getElementById('crop-y');
-            const cropYValue = document.getElementById('crop-y-value');
-            
-            // Logo controls
-            const enableLogo = document.getElementById('enable-logo');
-            const logoUploadSection = document.getElementById('logo-upload-section');
-            const logoUpload = document.getElementById('logo-upload');
-            const uploadLogoBtn = document.getElementById('upload-logo-btn');
-            const logoPreview = document.getElementById('logo-preview');
-            const logoOpacity = document.getElementById('logo-opacity');
-            const logoOpacityValue = document.getElementById('logo-opacity-value');
-            const logoSize = document.getElementById('logo-size');
-            const logoSizeValue = document.getElementById('logo-size-value');
-            const logoPositionX = document.getElementById('logo-position-x');
-            const logoPositionXValue = document.getElementById('logo-position-x-value');
-            const logoPositionY = document.getElementById('logo-position-y');
-            const logoPositionYValue = document.getElementById('logo-position-y-value');
-            
-            // Audio controls
-            const volumeControl = document.getElementById('volume-control');
-            const volumeValue = document.getElementById('volume-value');
-            const muteAudio = document.getElementById('mute-audio');
-            const replaceAudio = document.getElementById('replace-audio');
-            const audioUploadSection = document.getElementById('audio-upload-section');
-            const audioUpload = document.getElementById('audio-upload');
-            const uploadAudioBtn = document.getElementById('upload-audio-btn');
-            const changePitch = document.getElementById('change-pitch');
-            const pitchOptions = document.getElementById('pitch-options');
-            const pitchControl = document.getElementById('pitch-control');
-            const pitchValue = document.getElementById('pitch-value');
-            
-            // Video effects
-            const brightnessControl = document.getElementById('brightness-control');
-            const brightnessValue = document.getElementById('brightness-value');
-            const contrastControl = document.getElementById('contrast-control');
-            const contrastValue = document.getElementById('contrast-value');
-            const saturationControl = document.getElementById('saturation-control');
-            const saturationValue = document.getElementById('saturation-value');
-            const effectPresets = document.querySelectorAll('.effect-preset');
-            
-            // Speed & format
-            const speedControl = document.getElementById('speed-control');
-            const speedValue = document.getElementById('speed-value');
-            const changeResolution = document.getElementById('change-resolution');
-            const resolutionOptions = document.getElementById('resolution-options');
-            const resolutionSelect = document.getElementById('resolution-select');
-            const customResolution = document.getElementById('custom-resolution');
-            const customWidth = document.getElementById('custom-width');
-            const customHeight = document.getElementById('custom-height');
-            
-            // Metadata
-            const videoTitle = document.getElementById('video-title');
-            const videoAuthor = document.getElementById('video-author');
-            const videoDate = document.getElementById('video-date');
-            const videoLocation = document.getElementById('video-location');
-            const randomizeMetadata = document.getElementById('randomize-metadata');
-            
-            // Advanced options
-            const removeWatermarks = document.getElementById('remove-watermarks');
-            const changeCodec = document.getElementById('change-codec');
-            const addNoise = document.getElementById('add-noise');
-            const noiseAmount = document.getElementById('noise-amount');
-            const noiseAmountValue = document.getElementById('noise-amount-value');
-            
-            // Variables
-            let videoFile = null;
-            let videoUrl = null;
-            let videoDuration = 0;
-            let logoFile = null;
-            let audioFile = null;
-            let currentFilter = 'none';
-            let originalVideoWidth = 0;
-            let originalVideoHeight = 0;
-            
-            // Event Listeners
-            browseBtn.addEventListener('click', () => videoUpload.click());
-            uploadArea.addEventListener('click', () => videoUpload.click());
-            uploadArea.addEventListener('dragover', handleDragOver);
-            uploadArea.addEventListener('drop', handleDrop);
-            videoUpload.addEventListener('change', handleVideoUpload);
-            
-            // Trim controls
-            trimStart.addEventListener('input', updateTrimValues);
-            trimEnd.addEventListener('input', updateTrimValues);
-            trimStartTime.addEventListener('change', updateTrimFromInput);
-            trimEndTime.addEventListener('change', updateTrimFromInput);
-            
-            // Crop controls
-            enableCrop.addEventListener('change', toggleCropOptions);
-            cropWidth.addEventListener('input', updateCropWidth);
-            cropHeight.addEventListener('input', updateCropHeight);
-            cropX.addEventListener('input', updateCropX);
-            cropY.addEventListener('input', updateCropY);
-            
-            // Logo controls
-            enableLogo.addEventListener('change', toggleLogoSection);
-            uploadLogoBtn.addEventListener('click', () => logoUpload.click());
-            logoUpload.addEventListener('change', handleLogoUpload);
-            logoOpacity.addEventListener('input', updateLogoOpacity);
-            logoSize.addEventListener('input', updateLogoSize);
-            logoPositionX.addEventListener('input', updateLogoPositionX);
-            logoPositionY.addEventListener('input', updateLogoPositionY);
-            
-            // Audio controls
-            volumeControl.addEventListener('input', updateVolume);
-            muteAudio.addEventListener('change', toggleMute);
-            replaceAudio.addEventListener('change', toggleReplaceAudio);
-            uploadAudioBtn.addEventListener('click', () => audioUpload.click());
-            audioUpload.addEventListener('change', handleAudioUpload);
-            changePitch.addEventListener('change', togglePitchOptions);
-            pitchControl.addEventListener('input', updatePitch);
-            
-            // Video effects
-            brightnessControl.addEventListener('input', updateBrightness);
-            contrastControl.addEventListener('input', updateContrast);
-            saturationControl.addEventListener('input', updateSaturation);
-            effectPresets.forEach(preset => {
-                preset.addEventListener('click', applyEffectPreset);
+            // Add text button
+            addTextBtn.addEventListener('click', () => {
+                textEditorModal.style.display = 'flex';
             });
             
-            // Speed & format
-            speedControl.addEventListener('input', updateSpeed);
-            changeResolution.addEventListener('change', toggleResolutionOptions);
-            resolutionSelect.addEventListener('change', handleResolutionChange);
+            // Play button
+            playBtn.addEventListener('click', togglePlayback);
             
-            // Metadata
-            randomizeMetadata.addEventListener('change', handleRandomizeMetadata);
+            // Split button
+            splitBtn.addEventListener('click', splitClip);
             
-            // Advanced options
-            noiseAmount.addEventListener('input', updateNoiseAmount);
+            // Delete button
+            deleteBtn.addEventListener('click', deleteClip);
             
-            // Export
+            // Export button
             exportBtn.addEventListener('click', exportVideo);
             
-            // Functions
-            function handleDragOver(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                uploadArea.style.borderColor = 'var(--primary-color)';
-                uploadArea.style.backgroundColor = 'rgba(106, 17, 203, 0.1)';
-            }
+            // Text modal buttons
+            applyTextBtn.addEventListener('click', applyTextToVideo);
+            cancelTextBtn.addEventListener('click', () => {
+                textEditorModal.style.display = 'none';
+            });
             
-            function handleDrop(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                uploadArea.style.borderColor = '#ccc';
-                uploadArea.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === ' ') { // Spacebar for play/pause
+                    e.preventDefault();
+                    togglePlayback();
+                } else if (e.key === 'r') { // R for record
+                    e.preventDefault();
+                    toggleRecording();
+                }
+            });
+            
+            // Effect cards
+            document.querySelectorAll('.effect-card[data-effect]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const effect = card.getAttribute('data-effect');
+                    applyVideoEffect(effect);
+                });
+            });
+            
+            // Transition cards
+            document.querySelectorAll('.transition-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const transition = card.getAttribute('data-transition');
+                    applyTransition(transition);
+                });
+            });
+            
+            // Motion graphics templates
+            document.querySelectorAll('.effect-card[data-template]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const template = card.getAttribute('data-template');
+                    addMotionGraphics(template);
+                });
+            });
+            
+            // Cloud storage items
+            document.querySelectorAll('.storage-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const service = item.textContent.trim();
+                    connectCloudStorage(service);
+                });
+            });
+            
+            // Export options
+            document.querySelectorAll('.export-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.export-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    option.classList.add('active');
+                });
+            });
+        }
+        
+        async function checkCameraAccess() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 1280, height: 720 },
+                    audio: true 
+                });
                 
-                if (e.dataTransfer.files.length) {
-                    const file = e.dataTransfer.files[0];
-                    if (file.type.startsWith('video/')) {
-                        handleVideoFile(file);
-                    } else {
-                        alert('Please upload a video file.');
+                // Show camera feed in preview
+                videoPreview.srcObject = videoStream;
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                alert('Could not access camera. Please check permissions.');
+            }
+        }
+        
+        function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+        
+        async function startRecording() {
+            try {
+                if (!videoStream) {
+                    await checkCameraAccess();
+                }
+                
+                recordedChunks = [];
+                mediaRecorder = new MediaRecorder(videoStream, {
+                    mimeType: 'video/webm;codecs=vp9'
+                });
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
                     }
-                }
-            }
-            
-            function handleVideoUpload(e) {
-                if (e.target.files.length) {
-                    const file = e.target.files[0];
-                    handleVideoFile(file);
-                }
-            }
-            
-            function handleVideoFile(file) {
-                // Check file size (up to 5GB)
-                if (file.size > 5 * 1024 * 1024 * 1024) {
-                    alert('File size exceeds 5GB limit. Please choose a smaller file.');
-                    return;
-                }
-                
-                videoFile = file;
-                
-                if (videoUrl) {
-                    URL.revokeObjectURL(videoUrl);
-                }
-                
-                videoUrl = URL.createObjectURL(file);
-                videoPlayer.src = videoUrl;
-                
-                videoPlayer.onloadedmetadata = function() {
-                    videoDuration = videoPlayer.duration;
-                    originalVideoWidth = videoPlayer.videoWidth;
-                    originalVideoHeight = videoPlayer.videoHeight;
-                    updateDurationDisplay();
-                    exportBtn.disabled = false;
-                    
-                    // Set default custom resolution values
-                    customWidth.value = originalVideoWidth;
-                    customHeight.value = originalVideoHeight;
                 };
                 
-                // Update UI
-                uploadArea.innerHTML = `
-                    <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
-                    <h3>${file.name}</h3>
-                    <p>${formatFileSize(file.size)}</p>
-                    <button class="btn btn-secondary" id="change-video-btn">
-                        <i class="fas fa-exchange-alt"></i> Change Video
-                    </button>
-                `;
-                
-                document.getElementById('change-video-btn').addEventListener('click', () => videoUpload.click());
-                
-                // Auto-fill metadata with random values
-                if (randomizeMetadata.checked) {
-                    generateRandomMetadata();
-                }
-            }
-            
-            function updateDurationDisplay() {
-                trimStart.max = videoDuration;
-                trimEnd.max = videoDuration;
-                trimEnd.value = videoDuration;
-                
-                trimStartValue.textContent = formatTime(trimStart.value);
-                trimEndValue.textContent = formatTime(trimEnd.value);
-                
-                trimStartTime.value = formatTime(trimStart.value);
-                trimEndTime.value = formatTime(trimEnd.value);
-            }
-            
-            function updateTrimValues() {
-                trimStartValue.textContent = formatTime(trimStart.value);
-                trimEndValue.textContent = formatTime(trimEnd.value);
-                
-                trimStartTime.value = formatTime(trimStart.value);
-                trimEndTime.value = formatTime(trimEnd.value);
-                
-                // Update video player current time for preview
-                if (videoPlayer.currentTime < trimStart.value || videoPlayer.currentTime > trimEnd.value) {
-                    videoPlayer.currentTime = trimStart.value;
-                }
-            }
-            
-            function updateTrimFromInput() {
-                const startTime = parseTime(trimStartTime.value);
-                const endTime = parseTime(trimEndTime.value);
-                
-                if (startTime >= 0 && startTime <= videoDuration) {
-                    trimStart.value = startTime;
-                    trimStartValue.textContent = formatTime(startTime);
-                }
-                
-                if (endTime >= 0 && endTime <= videoDuration && endTime > startTime) {
-                    trimEnd.value = endTime;
-                    trimEndValue.textContent = formatTime(endTime);
-                }
-            }
-            
-            function toggleCropOptions() {
-                cropOptions.style.display = enableCrop.checked ? 'block' : 'none';
-            }
-            
-            function updateCropWidth() {
-                cropWidthValue.textContent = cropWidth.value;
-            }
-            
-            function updateCropHeight() {
-                cropHeightValue.textContent = cropHeight.value;
-            }
-            
-            function updateCropX() {
-                cropXValue.textContent = cropX.value;
-            }
-            
-            function updateCropY() {
-                cropYValue.textContent = cropY.value;
-            }
-            
-            function toggleLogoSection() {
-                logoUploadSection.style.display = enableLogo.checked ? 'block' : 'none';
-                watermarkPreview.style.display = enableLogo.checked && logoFile ? 'block' : 'none';
-            }
-            
-            function handleLogoUpload(e) {
-                if (e.target.files.length) {
-                    logoFile = e.target.files[0];
-                    const reader = new FileReader();
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    addVideoClip(url, 5, 'videoTrack1'); // Assuming 5 seconds for demo
                     
-                    reader.onload = function(event) {
-                        logoPreview.src = event.target.result;
-                        logoPreview.style.display = 'block';
+                    // Reset preview to camera feed
+                    videoPreview.srcObject = videoStream;
+                    videoPreview.controls = false;
+                };
+                
+                mediaRecorder.start(100); // Collect data every 100ms
+                isRecording = true;
+                recordBtn.innerHTML = '<i class="material-icons">stop</i> Stop';
+                
+                // Show video preview
+                previewPlaceholder.classList.add('hidden');
+                videoPreview.classList.remove('hidden');
+                
+                // Disable other buttons while recording
+                playBtn.disabled = true;
+                splitBtn.disabled = true;
+                deleteBtn.disabled = true;
+                importBtn.disabled = true;
+                addTextBtn.disabled = true;
+            } catch (err) {
+                console.error('Error starting recording:', err);
+                alert('Error starting recording. Please try again.');
+            }
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordBtn.innerHTML = '<i class="material-icons">fiber_manual_record</i> Record';
+                
+                // Re-enable buttons
+                playBtn.disabled = videoClips.length === 0;
+                splitBtn.disabled = videoClips.length === 0 || activeClipIndex === -1;
+                deleteBtn.disabled = videoClips.length === 0 || activeClipIndex === -1;
+                importBtn.disabled = false;
+                addTextBtn.disabled = false;
+            }
+        }
+        
+        function importVideo() {
+            // In a real app, this would open a file dialog
+            // For demo, we'll simulate importing a video
+            const demoVideos = [
+                'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+                'https://sample-videos.com/video123/mp4/480/sample_video_480x360_1mb.mp4'
+            ];
+            
+            const randomVideo = demoVideos[Math.floor(Math.random() * demoVideos.length)];
+            addVideoClip(randomVideo, 10, 'videoTrack1'); // 10 seconds for demo
+            
+            // Show the imported video
+            previewPlaceholder.classList.add('hidden');
+            videoPreview.classList.remove('hidden');
+            videoPreview.src = randomVideo;
+            videoPreview.controls = false;
+        }
+        
+        function addVideoClip(videoUrl, duration, trackId) {
+            const clipId = 'clip-' + Date.now();
+            const clipElement = document.createElement('div');
+            clipElement.className = 'clip';
+            clipElement.id = clipId;
+            clipElement.style.width = `${duration * 20}px`; // 20px per second
+            clipElement.innerHTML = `
+                <span>Clip ${videoClips.length + 1}</span>
+            `;
+            
+            clipElement.addEventListener('click', () => selectClip(clipId));
+            
+            // Add to the specified track
+            const track = document.getElementById(trackId || 'videoTrack1');
+            track.appendChild(clipElement);
+            
+            videoClips.push({
+                id: clipId,
+                url: videoUrl,
+                duration: duration,
+                element: clipElement,
+                effects: [],
+                track: trackId || 'videoTrack1'
+            });
+            
+            // Calculate total duration
+            totalDuration = Math.max(totalDuration, 
+                videoClips.reduce((sum, clip) => sum + clip.duration, 0));
+            
+            // Select the new clip
+            selectClip(clipId);
+            
+            // Enable play button if this is the first clip
+            if (videoClips.length === 1) {
+                playBtn.disabled = false;
+            }
+        }
+        
+        function selectClip(clipId) {
+            // Deselect all clips
+            videoClips.forEach((clip, index) => {
+                clip.element.classList.remove('active');
+                if (clip.id === clipId) {
+                    activeClipIndex = index;
+                }
+            });
+            
+            // Select the clicked clip
+            const selectedClip = videoClips.find(clip => clip.id === clipId);
+            if (selectedClip) {
+                selectedClip.element.classList.add('active');
+                
+                // Show the selected clip in the preview
+                videoPreview.srcObject = null;
+                videoPreview.src = selectedClip.url;
+                videoPreview.controls = false;
+                
+                // Enable split and delete buttons
+                splitBtn.disabled = false;
+                deleteBtn.disabled = false;
+            }
+        }
+        
+        function splitClip() {
+            if (activeClipIndex === -1) return;
+            
+            // In a real app, this would split the clip at current playhead position
+            alert('Splitting functionality would be implemented here. In this demo, we\'ll just simulate splitting the clip in half.');
+            
+            const clip = videoClips[activeClipIndex];
+            const newDuration = clip.duration / 2;
+            
+            // Update current clip duration
+            clip.duration = newDuration;
+            clip.element.style.width = `${newDuration * 20}px`;
+            clip.element.querySelector('span').textContent = `${newDuration.toFixed(1)}s`;
+            
+            // Add a new clip with the second half
+            addVideoClip(clip.url, newDuration, clip.track);
+        }
+        
+        function deleteClip(clipId) {
+            if (activeClipIndex === -1) return;
+            
+            // If clipId is not provided, delete the active clip
+            const deleteIndex = clipId ? videoClips.findIndex(clip => clip.id === clipId) : activeClipIndex;
+            if (deleteIndex === -1) return;
+            
+            const clipToDelete = videoClips[deleteIndex];
+            
+            // Remove from DOM
+            clipToDelete.element.remove();
+            
+            // Remove from array
+            videoClips.splice(deleteIndex, 1);
+            
+            // Revoke object URL if it's a blob
+            if (clipToDelete.url.startsWith('blob:')) {
+                URL.revokeObjectURL(clipToDelete.url);
+            }
+            
+            // Reset active clip
+            activeClipIndex = -1;
+            
+            // Update total duration
+            totalDuration = videoClips.reduce((sum, clip) => sum + clip.duration, 0);
+            
+            // Update preview
+            if (videoClips.length > 0) {
+                selectClip(videoClips[0].id);
+            } else {
+                videoPreview.src = '';
+                videoPreview.srcObject = videoStream;
+                playBtn.disabled = true;
+                splitBtn.disabled = true;
+                deleteBtn.disabled = true;
+            }
+        }
+        
+        function togglePlayback() {
+            if (isPlaying) {
+                pausePlayback();
+            } else {
+                startPlayback();
+            }
+        }
+        
+        function startPlayback() {
+            if (videoClips.length === 0) return;
+            
+            isPlaying = true;
+            playBtn.innerHTML = '<i class="material-icons">pause</i> Pause';
+            
+            // Start playhead animation
+            let elapsed = 0;
+            playInterval = setInterval(() => {
+                elapsed += 0.1;
+                currentTime = elapsed;
+                
+                // Update playhead position
+                const percentage = Math.min(100, (elapsed / totalDuration) * 100);
+                playhead.style.left = `${percentage}%`;
+                
+                // Find which clip is currently playing
+                let timeCounter = 0;
+                let currentClipIndex = 0;
+                for (let i = 0; i < videoClips.length; i++) {
+                    timeCounter += videoClips[i].duration;
+                    if (elapsed <= timeCounter) {
+                        currentClipIndex = i;
+                        break;
+                    }
+                }
+                
+                // Show the current clip in preview
+                if (videoClips[currentClipIndex].id !== videoPreview.src.split('/').pop()) {
+                    videoPreview.src = videoClips[currentClipIndex].url;
+                    videoPreview.currentTime = elapsed - videoClips.slice(0, currentClipIndex).reduce((sum, clip) => sum + clip.duration, 0);
+                    videoPreview.play().catch(e => console.error('Play error:', e));
+                }
+                
+                // Apply text elements that should be visible at this time
+                updateTextElements(elapsed);
+                
+                // End of playback
+                if (elapsed >= totalDuration) {
+                    pausePlayback();
+                    resetPlayhead();
+                }
+            }, 100);
+        }
+        
+        function pausePlayback() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            playBtn.innerHTML = '<i class="material-icons">play_arrow</i> Play';
+            videoPreview.pause();
+        }
+        
+        function resetPlayhead() {
+            playhead.style.left = '0%';
+            currentTime = 0;
+        }
+        
+        function applyVideoEffect(effect) {
+            if (activeClipIndex === -1) return;
+            
+            const clip = videoClips[activeClipIndex];
+            
+            // In a real app, this would apply actual video effects using WebGL
+            // For this demo, we'll just track the effects
+            if (!clip.effects.includes(effect)) {
+                clip.effects.push(effect);
+            } else {
+                clip.effects = clip.effects.filter(e => e !== effect);
+            }
+            
+            console.log(`Applied ${effect} effect to clip ${activeClipIndex + 1}`);
+            
+            // In a real implementation, we would apply the effect using WebGL
+            applyWebGLEffect(effect);
+        }
+        
+        function applyWebGLEffect(effect) {
+            // This is a placeholder for actual WebGL implementation
+            console.log(`Applying ${effect} effect using WebGL`);
+            
+            // For a real implementation, you would:
+            // 1. Create a WebGL context on a canvas
+            // 2. Render the video frame by frame to the canvas
+            // 3. Apply shaders based on the selected effect
+            // 4. Display the canvas instead of the video element
+        }
+        
+        function applyTransition(transition) {
+            // In a real app, this would apply a transition between clips
+            console.log(`Applying ${transition} transition`);
+            
+            // For a real implementation, you would:
+            // 1. Detect adjacent clips
+            // 2. Create a transition animation between them
+            // 3. Apply the transition effect using WebGL or CSS animations
+        }
+        
+        function addMotionGraphics(template) {
+            // In a real app, this would add a motion graphics template
+            console.log(`Adding ${template} motion graphics template`);
+            
+            // For a real implementation, you would:
+            // 1. Have predefined templates (lower thirds, titles, etc.)
+            // 2. Add them as overlay elements on the video
+            // 3. Animate them using CSS or WebGL
+        }
+        
+        function connectCloudStorage(service) {
+            // In a real app, this would connect to cloud storage
+            console.log(`Connecting to ${service}`);
+            
+            // For a real implementation, you would:
+            // 1. Use the service's API (Google Drive, Dropbox, etc.)
+            // 2. Authenticate the user
+            // 3. Provide file browsing and import/export functionality
+        }
+        
+        function applyTextToVideo() {
+            const content = textContent.value;
+            const font = textFont.value;
+            const color = textColor.value;
+            const duration = parseInt(textDuration.value);
+            
+            if (!content) {
+                alert('Please enter some text');
+                return;
+            }
+            
+            // Add text to the video
+            textElements.push({
+                content,
+                font,
+                color,
+                startTime: currentTime,
+                duration,
+                endTime: currentTime + duration
+            });
+            
+            console.log('Added text:', {
+                content,
+                font,
+                color,
+                startTime: currentTime,
+                duration,
+                endTime: currentTime + duration
+            });
+            
+            // Close the modal
+            textEditorModal.style.display = 'none';
+            
+            // In a real implementation, you would:
+            // 1. Create a text track or overlay
+            // 2. Render the text on the video using WebGL or canvas
+            // 3. Sync it with the video timeline
+        }
+        
+        function updateTextElements(currentTime) {
+            // In a real app, this would show/hide text elements based on current time
+            textElements.forEach(text => {
+                const isVisible = currentTime >= text.startTime && currentTime <= text.endTime;
+                console.log(`Text "${text.content}" is ${isVisible ? 'visible' : 'hidden'} at ${currentTime}s`);
+            });
+        }
+        
+        async function exportVideo() {
+            if (videoClips.length === 0) {
+                alert('No clips to export. Record or import some video first.');
+                return;
+            }
+            
+            const selectedQuality = document.querySelector('.export-option.active').getAttribute('data-quality');
+            console.log(`Exporting video at ${selectedQuality}p quality`);
+            
+            // Show progress bar
+            exportProgressContainer.classList.remove('hidden');
+            
+            // In a real app, this would use FFmpeg.wasm to process the video
+            // Here's a simplified example of how you might use it:
+            
+            try {
+                // Simulate FFmpeg processing (in a real app, you would use actual FFmpeg commands)
+                let progress = 0;
+                const exportInterval = setInterval(() => {
+                    progress += 5;
+                    exportProgressBar.style.width = `${progress}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(exportInterval);
                         
-                        // Create watermark preview
-                        watermarkPreview.style.display = 'block';
-                        watermarkPreview.innerHTML = `
-                            <img src="${event.target.result}" style="
-                                opacity: ${logoOpacity.value / 100};
-                                width: ${logoSize.value}%;
-                                position: absolute;
-                                top: ${logoPositionY.value}%;
-                                left: ${logoPositionX.value}%;
-                                transform: translate(-${logoPositionX.value}%, -${logoPositionY.value}%);
-                                pointer-events: none;
-                            ">
-                        `;
-                    };
-                    
-                    reader.readAsDataURL(logoFile);
-                }
+                        // For a real export with FFmpeg.wasm:
+                        // 1. Write input files to FFmpeg's virtual file system
+                        // 2. Run FFmpeg commands to process the video
+                        // 3. Read the output file
+                        // 4. Create a download link for the user
+                        
+                        setTimeout(() => {
+                            exportProgressContainer.classList.add('hidden');
+                            alert(`Video exported successfully at ${selectedQuality}p resolution! (This is a demo - no actual file is created)`);
+                            exportProgressBar.style.width = '0%';
+                            
+                            // Example of actual FFmpeg usage:
+                            // processWithFFmpeg(videoClips, selectedQuality);
+                        }, 500);
+                    }
+                }, 100);
+            } catch (err) {
+                console.error('Error exporting video:', err);
+                alert('Error exporting video. Please try again.');
+                exportProgressContainer.classList.add('hidden');
             }
+        }
+        
+        async function processWithFFmpeg(clips, quality) {
+            // This is an example of how you might use FFmpeg.wasm
+            // Note: This won't work in this demo due to CORS and other limitations
             
-            function updateLogoOpacity() {
-                logoOpacityValue.textContent = logoOpacity.value;
-                if (watermarkPreview.firstChild) {
-                    watermarkPreview.firstChild.style.opacity = logoOpacity.value / 100;
-                }
-            }
+            // Set output file name
+            const outputFileName = 'output.mp4';
             
-            function updateLogoSize() {
-                logoSizeValue.textContent = logoSize.value;
-                if (watermarkPreview.firstChild) {
-                    watermarkPreview.firstChild.style.width = logoSize.value + '%';
-                }
-            }
-            
-            function updateLogoPositionX() {
-                logoPositionXValue.textContent = logoPositionX.value;
-                if (watermarkPreview.firstChild) {
-                    watermarkPreview.firstChild.style.left = logoPositionX.value + '%';
-                    watermarkPreview.firstChild.style.transform = `translate(-${logoPositionX.value}%, -${logoPositionY.value}%)`;
-                }
-            }
-            
-            function updateLogoPositionY() {
-                logoPositionYValue.textContent = logoPositionY.value;
-                if (watermarkPreview.firstChild) {
-                    watermarkPreview.firstChild.style.top = logoPositionY.value + '%';
-                    watermarkPreview.firstChild.style.transform = `translate(-${logoPositionX.value}%, -${logoPositionY.value}%)`;
-                }
-            }
-            
-            function updateVolume() {
-                volumeValue.textContent = volumeControl.value;
-                videoPlayer.volume = volumeControl.value / 100;
-            }
-            
-            function toggleMute() {
-                videoPlayer.muted = muteAudio.checked;
-            }
-            
-            function toggleReplaceAudio() {
-                audioUploadSection.style.display = replaceAudio.checked ? 'block' : 'none';
-            }
-            
-            function handleAudioUpload(e) {
-                if (e.target.files.length) {
-                    audioFile = e.target.files[0];
-                }
-            }
-            
-            function togglePitchOptions() {
-                pitchOptions.style.display = changePitch.checked ? 'block' : 'none';
-            }
-            
-            function updatePitch() {
-                pitchValue.textContent = pitchControl.value;
-            }
-            
-            function updateBrightness() {
-                brightnessValue.textContent = brightnessControl.value;
-                applyVideoFilters();
-            }
-            
-            function updateContrast() {
-                contrastValue.textContent = contrastControl.value;
-                applyVideoFilters();
-            }
-            
-            function updateSaturation() {
-                saturationValue.textContent = saturationControl.value;
-                applyVideoFilters();
-            }
-            
-            function updateNoiseAmount() {
-                noiseAmountValue.textContent = noiseAmount.value;
-            }
-            
-            function applyEffectPreset(e) {
-                effectPresets.forEach(preset => preset.classList.remove('active'));
-                e.target.classList.add('active');
-                currentFilter = e.target.dataset.filter;
-                applyVideoFilters();
-            }
-            
-            function applyVideoFilters() {
-                let filterString = '';
-                
-                // Brightness, contrast, saturation
-                filterString += `brightness(${brightnessControl.value / 100}) `;
-                filterString += `contrast(${contrastControl.value / 100}) `;
-                filterString += `saturate(${saturationControl.value / 100}) `;
-                
-                // Preset filters
-                switch(currentFilter) {
-                    case 'grayscale':
-                        filterString += 'grayscale(100%) ';
-                        break;
-                    case 'sepia':
-                        filterString += 'sepia(100%) ';
-                        break;
-                    case 'invert':
-                        filterString += 'invert(100%) ';
-                        break;
-                    case 'blur':
-                        filterString += 'blur(2px) ';
-                        break;
-                    case 'vintage':
-                        filterString += 'sepia(50%) contrast(120%) brightness(90%) saturate(80%) ';
-                        break;
-                }
-                
-                // Visual noise if enabled
-                if (addNoise.checked) {
-                    filterString += `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 ${noiseAmount.value / 100} 0"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>#noise')`;
-                }
-                
-                videoPlayer.style.filter = filterString.trim();
-            }
-            
-            function updateSpeed() {
-                speedValue.textContent = speedControl.value;
-                videoPlayer.playbackRate = parseFloat(speedControl.value);
-            }
-            
-            function toggleResolutionOptions() {
-                resolutionOptions.style.display = changeResolution.checked ? 'block' : 'none';
-            }
-            
-            function handleResolutionChange() {
-                customResolution.style.display = resolutionSelect.value === 'custom' ? 'block' : 'none';
-            }
-            
-            function handleRandomizeMetadata() {
-                if (randomizeMetadata.checked) {
-                    generateRandomMetadata();
+            // Write input files to FFmpeg's file system
+            for (let i = 0; i < clips.length; i++) {
+                const clip = clips[i];
+                if (clip.url.startsWith('blob:')) {
+                    const response = await fetch(clip.url);
+                    const buffer = await response.arrayBuffer();
+                    ffmpeg.FS('writeFile', `input${i}.mp4`, new Uint8Array(buffer));
                 } else {
-                    // Clear metadata fields
-                    videoTitle.value = '';
-                    videoAuthor.value = '';
-                    videoDate.value = '';
-                    videoLocation.value = '';
-                }
-            }
-            
-            function generateRandomMetadata() {
-                // Random titles
-                const titles = [
-                    "My Vacation Video",
-                    "Personal Recording",
-                    "Family Memories",
-                    "Event Recording",
-                    "Video Diary",
-                    "My Project",
-                    "Personal Video",
-                    "Home Video",
-                    "Private Recording",
-                    "My Collection"
-                ];
-                
-                // Random names
-                const names = [
-                    "John Smith",
-                    "Emma Johnson",
-                    "Michael Williams",
-                    "Sarah Brown",
-                    "David Jones",
-                    "Lisa Garcia",
-                    "Robert Miller",
-                    "Jennifer Davis",
-                    "Thomas Rodriguez",
-                    "Susan Martinez"
-                ];
-                
-                // Random locations
-                const locations = [
-                    "New York, USA",
-                    "London, UK",
-                    "Tokyo, Japan",
-                    "Paris, France",
-                    "Berlin, Germany",
-                    "Sydney, Australia",
-                    "Toronto, Canada",
-                    "Dubai, UAE",
-                    "Singapore",
-                    "Mumbai, India"
-                ];
-                
-                // Generate random date within last 5 years
-                const currentDate = new Date();
-                const pastDate = new Date();
-                pastDate.setFullYear(currentDate.getFullYear() - 5);
-                const randomDate = new Date(pastDate.getTime() + Math.random() * (currentDate.getTime() - pastDate.getTime()));
-                
-                // Set random values
-                videoTitle.value = titles[Math.floor(Math.random() * titles.length)];
-                videoAuthor.value = names[Math.floor(Math.random() * names.length)];
-                videoDate.value = randomDate.toISOString().split('T')[0];
-                videoLocation.value = locations[Math.floor(Math.random() * locations.length)];
-            }
-            
-            async function exportVideo() {
-                if (!videoFile) {
-                    alert('Please upload a video first.');
+                    // For external URLs, you would need to handle CORS
+                    console.log('Cannot process external URLs directly due to CORS');
                     return;
                 }
-                
-                exportBtn.disabled = true;
-                progressContainer.style.display = 'block';
-                progressBar.style.width = '0%';
-                statusMessage.textContent = 'Initializing video transformation...';
-                
-                try {
-                    // Simulate processing (in a real app, you would use FFmpeg.js or similar)
-                    statusMessage.textContent = 'Removing original fingerprints...';
-                    await simulateProgress(10, 20);
-                    
-                    statusMessage.textContent = 'Applying visual modifications...';
-                    await simulateProgress(30, 40);
-                    
-                    statusMessage.textContent = 'Processing audio changes...';
-                    await simulateProgress(50, 60);
-                    
-                    statusMessage.textContent = 'Updating metadata...';
-                    await simulateProgress(70, 80);
-                    
-                    statusMessage.textContent = 'Finalizing new identity...';
-                    await simulateProgress(90, 100);
-                    
-                    exportComplete();
-                    
-                } catch (error) {
-                    console.error('Error exporting video:', error);
-                    statusMessage.textContent = 'Error: ' + error.message;
-                    exportBtn.disabled = false;
-                }
             }
             
-            function simulateProgress(min, max) {
-                return new Promise(resolve => {
-                    let progress = min;
-                    const interval = setInterval(() => {
-                        progress += Math.random() * 2;
-                        if (progress >= max) {
-                            progress = max;
-                            clearInterval(interval);
-                            resolve();
-                        }
-                        progressBar.style.width = `${progress}%`;
-                    }, 100);
-                });
-            }
+            // Run FFmpeg command
+            // This is a simplified example - actual commands would be more complex
+            await ffmpeg.run(
+                '-i', 'input0.mp4',
+                '-c:v', 'libx264',
+                '-crf', '23',
+                '-preset', 'fast',
+                '-c:a', 'aac',
+                '-b:a', '128k',
+                outputFileName
+            );
             
-            function exportComplete() {
-                statusMessage.textContent = 'Transformation complete! Video identity changed.';
-                
-                // Create a download link (in a real app, this would be the processed video)
-                const a = document.createElement('a');
-                a.href = videoUrl;
-                a.download = `transformed_${videoFile.name.replace(/\.[^/.]+$/, '')}_${Date.now()}.mp4`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                
-                setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                    exportBtn.disabled = false;
-                }, 5000);
-            }
+            // Read the result
+            const data = ffmpeg.FS('readFile', outputFileName);
             
-            // Utility functions
-            function formatTime(seconds) {
-                seconds = parseFloat(seconds);
-                const hrs = Math.floor(seconds / 3600);
-                const mins = Math.floor((seconds % 3600) / 60);
-                const secs = Math.floor(seconds % 60);
-                
-                return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-            }
-            
-            function parseTime(timeString) {
-                const parts = timeString.split(':');
-                if (parts.length === 3) {
-                    return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
-                } else if (parts.length === 2) {
-                    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-                }
-                return parseInt(parts[0]) || 0;
-            }
-            
-            function formatFileSize(bytes) {
-                if (bytes >= 1073741824) {
-                    return (bytes / 1073741824).toFixed(2) + ' GB';
-                } else if (bytes >= 1048576) {
-                    return (bytes / 1048576).toFixed(2) + ' MB';
-                } else if (bytes >= 1024) {
-                    return (bytes / 1024).toFixed(2) + ' KB';
-                } else {
-                    return bytes + ' bytes';
-                }
-            }
-        });
+            // Create download link
+            const blob = new Blob([data.buffer], { type: 'video/mp4' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = outputFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
     </script>
 </body>
 </html>
